@@ -1,2 +1,2 @@
 @echo off
-elm.exe make TodoStoreBroker.elm --output elm-todomvc.js
+elm.exe make src\TodoStoreBroker.elm --output dist\TodoStoreBroker.js
