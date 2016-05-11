@@ -1,12 +1,23 @@
-import Html exposing (Html)
+import Html.App as Html
 import TodoStore exposing (initialModel, update)
 import TodoStoreView exposing (view)
-import StartApp.Simple
+import TodoStoreBroker exposing (subscriptions, todoListChanges)
 
-main : Signal Html
+
+init =
+    ( initialModel, todoListChanges [] )
+
+
+update msg model =
+    let model = TodoStore.update msg model
+    in ( model, todoListChanges model.todos )
+
+
+main: Program Never
 main =
-    StartApp.Simple.start
-        { model = initialModel
+    Html.program
+        { init = init
         , update = update
         , view = view
+        , subscriptions = subscriptions
         }

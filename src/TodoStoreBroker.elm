@@ -1,30 +1,40 @@
-module TodoStoreBroker where
+port module TodoStoreBroker exposing (..)
 
 import TodoStore exposing (..)
 
-port dispatchCreate : Signal String
-port dispatchComplete : Signal TodoId
-port dispatchDestroy : Signal TodoId
-port dispatchDestroyCompleted : Signal ()
-port dispatchToggleCompleteAll : Signal ()
-port dispatchUndoComplete : Signal TodoId
-port dispatchUpdateText : Signal (TodoId, String)
 
-actions : Signal Action
-actions =
-    Signal.mergeMany [
-        Signal.map Create dispatchCreate,
-        Signal.map Complete dispatchComplete,
-        Signal.map Destroy dispatchDestroy,
-        Signal.map (always DestroyCompleted) dispatchDestroyCompleted,
-        Signal.map (always ToggleCompleteAll) dispatchToggleCompleteAll,
-        Signal.map UndoComplete dispatchUndoComplete,
-        Signal.map (\(id, text) -> UpdateText id text) dispatchUpdateText
+port dispatchCreate : (String -> msg) -> Sub msg
+
+
+port dispatchComplete : (TodoId -> msg) -> Sub msg
+
+
+port dispatchDestroy : (TodoId -> msg) -> Sub msg
+
+
+port dispatchDestroyCompleted : (List Int -> msg) -> Sub msg
+
+
+port dispatchToggleCompleteAll : (List Int -> msg) -> Sub msg
+
+
+port dispatchUndoComplete : (TodoId -> msg) -> Sub msg
+
+
+port dispatchUpdateText : (( TodoId, String ) -> msg) -> Sub msg
+
+
+port todoListChanges : (List TodoItem) -> Cmd msg
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+  Sub.batch
+    [ dispatchCreate Create
+    , dispatchComplete Complete
+    , dispatchDestroy Destroy
+    , dispatchDestroyCompleted (always DestroyCompleted)
+    , dispatchToggleCompleteAll (always ToggleCompleteAll)
+    , dispatchUndoComplete UndoComplete
+    , dispatchUpdateText (\( id, text ) -> UpdateText id text)
     ]
-
-modelChanges: Signal Model
-modelChanges =
-    Signal.foldp update initialModel actions
-
-port todoListChanges : Signal (List TodoItem)
-port todoListChanges = Signal.dropRepeats (Signal.map .todos modelChanges)
