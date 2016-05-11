@@ -1,13 +1,3 @@
-var defaultValues = {
-  dispatchCreate: "",
-  dispatchComplete: 0,
-  dispatchDestroy: 0,
-  dispatchDestroyCompleted: [],
-  dispatchToggleCompleteAll: [],
-  dispatchUndoComplete: 0,
-  dispatchUpdateText: [0, ""]
-};
-
 var ports = Elm.Main.worker().ports;
 
 ports.todoListChanges.subscribe(function(updatedTodoList) {
