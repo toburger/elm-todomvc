@@ -12,10 +12,10 @@ port dispatchComplete : (TodoId -> msg) -> Sub msg
 port dispatchDestroy : (TodoId -> msg) -> Sub msg
 
 
-port dispatchDestroyCompleted : (List Int -> msg) -> Sub msg
+port dispatchDestroyCompleted : ({} -> msg) -> Sub msg
 
 
-port dispatchToggleCompleteAll : (List Int -> msg) -> Sub msg
+port dispatchToggleCompleteAll : ({} -> msg) -> Sub msg
 
 
 port dispatchUndoComplete : (TodoId -> msg) -> Sub msg
@@ -36,5 +36,5 @@ subscriptions model =
     , dispatchDestroyCompleted (always DestroyCompleted)
     , dispatchToggleCompleteAll (always ToggleCompleteAll)
     , dispatchUndoComplete UndoComplete
-    , dispatchUpdateText (\( id, text ) -> UpdateText id text)
+    , dispatchUpdateText (uncurry UpdateText)
     ]
